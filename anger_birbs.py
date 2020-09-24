@@ -17,7 +17,7 @@ from Box2D.b2 import (world, polygonShape, circleShape,
 
 from anger_sprites import *
 
-PPM = 80
+PPM = 100
 VIEW = 1000,600
 FPS = 40
 TIME_STEP = 1.0/FPS
@@ -26,7 +26,7 @@ BLACK = (0,0,0)
 
 game = True
 running = True
-art = False
+art = True
 
 rotate = 0
 
@@ -41,15 +41,34 @@ redwing_art = pygame.image.load("anger_art/redwing.png").convert_alpha()
 greatblue_art = pygame.image.load("anger_art/greatblue.png").convert_alpha()
 blackcap_art = pygame.image.load("anger_art/blackcap.png").convert_alpha()
 ground_art = pygame.image.load("anger_art/ground.png").convert_alpha()
+log_long_art = pygame.image.load("anger_art/log_long.png").convert_alpha()
+log_short_art = pygame.image.load("anger_art/log_short.png").convert_alpha()
 
 world = world(gravity=(0,-10), doSleep=True)
 
 things = []
 
-ground = Thing(world,ground_art,(6,.3),0,BOX,static=True)
+ground = Thing(world,ground_art,(5,.3),0,BOX,static=True)
 things.append(ground)
-greatblue = Thing(world,greatblue_art,(5,5),-10,CIRCLE,radius=.3)
+greatblue = Thing(world,greatblue_art,(8,5),-10,CIRCLE,radius=.25)
 things.append(greatblue)
+#a_log = Thing(world,log_long_art,(4,5),20,BOX)
+#things.append(a_log)
+
+def make_log(pos,rotation,size):
+    if size == 0:
+        a_log = Thing(world,log_short_art,pos,rotation,BOX)
+    elif size == 1:
+        a_log = Thing(world,log_long_art,pos,rotation,BOX)
+    things.append(a_log)
+
+logs = [((1.5,1.4),90,1),((2.5,1.4),90,1),((2.0,2.4),0,1),((2.25,3.0),90,0),
+    ((1.75,3.0),90,0),((2.0,3.4),0,0)]
+for log in logs:
+    make_log(log[0],log[1],log[2])
+
+
+
 
 
 
