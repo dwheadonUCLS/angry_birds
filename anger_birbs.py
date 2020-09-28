@@ -32,13 +32,13 @@ clock = pygame.time.Clock()
 #need to redo all art at the end
 background_art = pygame.image.load("anger_art/background.png").convert_alpha()
 redwing_art = pygame.image.load("anger_art/redwing.png").convert_alpha()
-greatblue_art = pygame.image.load("anger_art/greatblue.png").convert_alpha()
-blackcap_art = pygame.image.load("anger_art/blackcap.png").convert_alpha()
+bluebird_art = pygame.image.load("anger_art/bluebird.png").convert_alpha()
+basic_art = pygame.image.load("anger_art/basic_bird.png").convert_alpha()
 ground_art = pygame.image.load("anger_art/ground.png").convert_alpha()
 log_long_art = pygame.image.load("anger_art/log_long.png").convert_alpha()
 log_short_art = pygame.image.load("anger_art/log_short.png").convert_alpha()
-slingshot_art = pygame.image.load("anger_art/slingshot2.png").convert_alpha()
-cutie_art = pygame.image.load("anger_art/cutie.png").convert_alpha()
+slingshot_art = pygame.image.load("anger_art/slingshot.png").convert_alpha()
+
 
 world = world(gravity=(0,-10), doSleep=True)
 
@@ -47,14 +47,14 @@ birds = []
 
 ground = Thing(world,ground_art,(5,0),0,BOX,static=True)
 things.append(ground)
-slingshot = Slingshot(slingshot_art,(1.5,1.1),world)
+slingshot = Slingshot(slingshot_art,(1.5,1.3),world)
 things.append(slingshot)
-cutie = Bird(world,cutie_art,(2.2,5),-10,CIRCLE,scale=.7)
-things.append(cutie)
-birds.append(cutie)
-blackcap = Bird(world,blackcap_art,(4,5),-10,CIRCLE)
-things.append(blackcap)
-birds.append(blackcap)
+basic = Bird(world,basic_art,(2.2,5),-10,CIRCLE,scale=1)
+things.append(basic)
+birds.append(basic)
+bluebird = Bird(world,bluebird_art,(4,5),-10,CIRCLE)
+things.append(bluebird)
+birds.append(bluebird)
 
 def draw_sling(color,slingshot):
     if in_sling!=None:
@@ -136,7 +136,7 @@ while running:
     world.Step(TIME_STEP, 10, 10) #always do before drawing!!
     if art:
         screen.fill((147,211,246))
-        screen.blit(background_art,(0,-50))
+        screen.blit(background_art,(0,0))
         slingshot.draw(screen)
         draw_sling(SLING_COLOR,slingshot)
         for each in things:
