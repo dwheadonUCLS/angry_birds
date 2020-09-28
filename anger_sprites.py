@@ -66,7 +66,7 @@ class Bird(Thing):
             (posb[1]-posa[1])*reduct)
         self.body.ApplyLinearImpulse(vector,self.body.position,True)
     def load(self,world,slingshot):
-        pos = slingshot.rect.center
+        pos = slingshot.rect.centerx,slingshot.rect.y+10
         pos = pos[0]/PPM, (600-pos[1])/PPM
         self.body.transform = (pos,self.body.angle)
 
@@ -76,9 +76,9 @@ class Slingshot():
         self.img = img
         self.rect = img.get_rect(center = (pos[0]*PPM, 600-pos[1]*PPM))
         anchora = ((self.rect.topleft[0]+10)/PPM,
-            (600-self.rect.topleft[1]+10)/PPM)
+            (600-self.rect.topleft[1]-10)/PPM)
         anchorb = ((self.rect.topright[0]-10)/PPM,
-            (600-self.rect.topright[1]+10)/PPM)
+            (600-self.rect.topright[1]-10)/PPM)
         self.anchora = world.CreateStaticBody(position=(anchora),angle=0)
         self.anchorb = world.CreateStaticBody(position=(anchorb),angle=0)
     def draw(self,screen):

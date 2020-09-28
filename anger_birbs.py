@@ -4,11 +4,6 @@ import Box2D
 from Box2D.b2 import (world, polygonShape, circleShape,
     staticBody, dynamicBody, pi, globals)
 
-#TO DO:
-# EXAMPLE ART SO I DONT HAVE TO REWRITE DRAW LATER
-#DEFINE CLASSES, INIT AND DRAW METHODS FIRST
-#CLASSES: BIRD, ENEMY(PIG), SCENERY, LEVEL - WHAT SHOULD SLINGSHOT BE?
-
 
 from anger_sprites import *
 
@@ -17,11 +12,14 @@ VIEW = 1000,600
 FPS = 40
 TIME_STEP = 1.0/FPS
 WHITE = (255,255,255)
+MAROON = (128,0,0)
 BLACK = (0,0,0)
+SLING_COLOR = MAROON
+
 
 game = True
 running = True
-art = False
+art = True
 
 rotate = 0
 
@@ -40,6 +38,7 @@ ground_art = pygame.image.load("anger_art/ground.png").convert_alpha()
 log_long_art = pygame.image.load("anger_art/log_long.png").convert_alpha()
 log_short_art = pygame.image.load("anger_art/log_short.png").convert_alpha()
 slingshot_art = pygame.image.load("anger_art/slingshot2.png").convert_alpha()
+cutie_art = pygame.image.load("anger_art/cutie.png").convert_alpha()
 
 world = world(gravity=(0,-10), doSleep=True)
 
@@ -48,16 +47,31 @@ birds = []
 
 ground = Thing(world,ground_art,(5,0),0,BOX,static=True)
 things.append(ground)
-redwing = Bird(world,redwing_art,(2.2,5),-10,CIRCLE,scale=.8)
-things.append(redwing)
-birds.append(redwing)
-blackcap = Bird(world,blackcap_art,(4,5),-10,CIRCLE,scale=.8)
+slingshot = Slingshot(slingshot_art,(1.5,1.1),world)
+things.append(slingshot)
+cutie = Bird(world,cutie_art,(2.2,5),-10,CIRCLE,scale=.7)
+things.append(cutie)
+birds.append(cutie)
+blackcap = Bird(world,blackcap_art,(4,5),-10,CIRCLE)
 things.append(blackcap)
 birds.append(blackcap)
-slingshot = Slingshot(slingshot_art,(1.5,1.1),world,scale = 1)
-things.append(slingshot)
-#a_log = Thing(world,log_long_art,(4,5),20,BOX)
-#things.append(a_log)
+
+def draw_sling(color,slingshot):
+    if in_sling!=None:
+        pygame.draw.line(screen,color,(slingshot.anchora.position[0]*PPM,
+            600-slingshot.anchora.position[1]*PPM),
+            (in_sling.body.position[0]*PPM,
+            600-in_sling.body.position[1]*PPM),4)
+        pygame.draw.line(screen,color,(slingshot.anchorb.position[0]*PPM,
+            600-slingshot.anchorb.position[1]*PPM),
+            (in_sling.body.position[0]*PPM,
+            600-in_sling.body.position[1]*PPM),4)
+    else:
+        pygame.draw.line(screen,color,(slingshot.anchora.position[0]*PPM,
+            600-slingshot.anchora.position[1]*PPM),
+            (slingshot.anchorb.position[0]*PPM,
+            600-slingshot.anchorb.position[1]*PPM),4)
+
 
 def make_log(pos,rotation,size):
     if size == 0:
@@ -101,9 +115,22 @@ while running:
             birds[0].body.awake = False
     else:
         if clicked:
-            pos = pygame.mouse.get_pos()
-            pos = pos[0]/PPM,(600-pos[1])/PPM
-            in_sling.body.transform = (pos,in_sling.body.angle)
+            posa = pygame.mouse.get_pos()
+            posa = posa[0]/PPM,(600-posa[1])/PPM
+            posb = slingshot.rect.centerx,slingshot.rect.y
+            posb = posb[0]/PPM, (600-posb[1])/PPM
+            length = (((posb[0]-posa[0])**2+
+                (posb[1]-posa[1])**2)**(1/2))
+            if length<=1.0:
+                in_sling.body.transform = (posa,in_sling.body.angle)
+            else:
+                reduct = 1.0/length
+                move = (posb[0]-(posb[0]-posa[0])*reduct,
+                    posb[1]-(posb[1]-posa[1])*reduct)
+                in_sling.body.transform = (move,in_sling.body.angle)
+
+        else:
+            in_sling.body.awake=False
 
 
     world.Step(TIME_STEP, 10, 10) #always do before drawing!!
@@ -111,26 +138,15 @@ while running:
         screen.fill((147,211,246))
         screen.blit(background_art,(0,-50))
         slingshot.draw(screen)
+        draw_sling(SLING_COLOR,slingshot)
         for each in things:
-            each.draw(screen)
+            if each != slingshot:
+                each.draw(screen)
     elif not art:
         screen.fill((0,0,0))
         for each in things:
             each.draw_shape(screen)
-        if in_sling != None:
-            pygame.draw.line(screen,WHITE,(slingshot.anchora.position[0]*PPM,
-                600-slingshot.anchora.position[1]*PPM),
-                (in_sling.body.position[0]*PPM,
-                600-in_sling.body.position[1]*PPM))
-            pygame.draw.line(screen,WHITE,(slingshot.anchorb.position[0]*PPM,
-                600-slingshot.anchorb.position[1]*PPM),
-                (in_sling.body.position[0]*PPM,
-                600-in_sling.body.position[1]*PPM))
-        else:
-            pygame.draw.line(screen,WHITE,(slingshot.anchora.position[0]*PPM,
-                600-slingshot.anchora.position[1]*PPM),
-                (slingshot.anchorb.position[0]*PPM,
-                600-slingshot.anchorb.position[1]*PPM))
+        draw_sling(WHITE,slingshot)
 
     pygame.display.flip()
     clock.tick(FPS)
